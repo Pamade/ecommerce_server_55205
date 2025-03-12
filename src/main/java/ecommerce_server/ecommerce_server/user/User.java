@@ -32,7 +32,7 @@ public class User implements UserDetails {
     @Column(length = 100)
     private String password;
     @Column(length = 15)
-    private int phoneNumber;
+    private String phoneNumber;
     @Column(length = 35)
     private String city;
     @Column(length = 50)

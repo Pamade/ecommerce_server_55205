@@ -1,0 +1,23 @@
+Product
+_____
+int id
+int Quantity
+double Price
+String Name
+String Description
+String Color
+JSON Sizes
+JSON ImagesLinks
+Enum Type (like t-shirt/short/hoodie)
+Enum Dress style (like casual/formal/party/gym)
+String Details
+
+Reviews
+___
+Created at
+User -> foreign key
+int product_id
+int user_id
+rating review value
+String opinion
+int review

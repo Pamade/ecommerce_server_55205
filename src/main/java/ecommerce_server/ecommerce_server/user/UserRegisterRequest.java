@@ -33,8 +33,8 @@ public class UserRegisterRequest {
     private String password;
     private String repeatPassword;
     @NotBlank(message = "Phone number is required")
-    @Size(min = 9, max = 15, message = "Phone number must containt minimum 9 characters")
-    private int phoneNumber;
+    @Size(max = 15)
+    private String phoneNumber;
     @NotBlank(message = "City is required")
     @Size(min = 2, max = 35, message = "City must containt 2 to 35 characters")
     private String city;
