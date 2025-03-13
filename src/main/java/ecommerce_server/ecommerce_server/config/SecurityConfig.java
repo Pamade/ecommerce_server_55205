@@ -63,6 +63,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((auth) -> {
                     auth.requestMatchers("/api/auth/**").permitAll()
                             .requestMatchers("/api/auth/me").hasRole("USER")
+                            .requestMatchers("/api/products/**").permitAll()
                             .requestMatchers("/uploads/**").permitAll()
 
                             .requestMatchers("/api/content/**").permitAll()
