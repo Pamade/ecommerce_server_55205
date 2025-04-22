@@ -1,10 +1,12 @@
 package ecommerce_server.ecommerce_server.user;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import ecommerce_server.ecommerce_server.ProductReview.ProductReview;
+import ecommerce_server.ecommerce_server.cart.Cart;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@ToString(exclude = "cart") // exclude circular reference
 public class User implements UserDetails {
 
     @Id
@@ -44,6 +47,11 @@ public class User implements UserDetails {
     private Date createdAt;
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastUpdated;
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<ProductReview> reviews;
+    @OneToOne(mappedBy = "user")
+    private Cart cart;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

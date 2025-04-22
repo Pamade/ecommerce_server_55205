@@ -1,14 +1,17 @@
 package ecommerce_server.ecommerce_server.product;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import ecommerce_server.ecommerce_server.ProductReview.ProductReview;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Entity
 @Data
 public class Product {
@@ -19,14 +22,9 @@ public class Product {
     private String name;
     private String description;
     private String color;
-    @ElementCollection
-    @CollectionTable(name="product_reviews", joinColumns =  @JoinColumn(name="product_id"))
-    @Column(name="review")
-    private List<String> reviews;
-    @ElementCollection
-    @CollectionTable(name="product_ratings", joinColumns = @JoinColumn(name="product_id"))
-    @Column(name="rating")
-    private List<@Min(1) @Max(5) Integer> ratings;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<ProductReview> productReviews;
     @ElementCollection
     @CollectionTable(name="product_size_quantities", joinColumns = @JoinColumn(name="product_id"))
     @MapKeyEnumerated(EnumType.STRING)
@@ -45,4 +43,13 @@ public class Product {
     private Date createdAt;
     private String details;
 
+
+    @PrePersist
+    @PreUpdate
+    private void ensureDefaultImage() {
+        if (images == null || images.isEmpty()) {
+            images = new ArrayList<>();
+            images.add("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-RcH3_rFP8ZmSEgjhZy5pv4O4bLl-SwZGsA&s");  // Set your default image URL here
+        }
+    }
 }

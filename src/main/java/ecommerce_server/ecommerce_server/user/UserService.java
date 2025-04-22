@@ -1,6 +1,9 @@
 package ecommerce_server.ecommerce_server.user;
 
+import ecommerce_server.ecommerce_server.cart.Cart;
+import ecommerce_server.ecommerce_server.cart.CartRepository;
 import ecommerce_server.ecommerce_server.jwt.JwtService;
+import ecommerce_server.ecommerce_server.utils.SecurityUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -25,6 +29,8 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtService jwtService;
+    private final CartRepository cartRepository;
+    private final SecurityUtils securityUtils;
     public boolean emailExists(String email) {
         if (email == null) {
             return false;
@@ -111,6 +117,9 @@ public class UserService {
                     .password(encryptedPassword)
                     .build();
             userRepository.save(user);
+
+            Cart cart = Cart.builder().user(user).cartItems(new ArrayList<>()).totalPrice(0).build();
+            cartRepository.save(cart);
             System.out.println("User registered");
             return new ResponseEntity<>("User registered successfully", HttpStatus.CREATED);
         } catch (Exception e) {
@@ -134,6 +143,7 @@ public class UserService {
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(404).body(new HashMap<>(Map.of("error", "Invalid Credentials")));
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(404).body(new HashMap<>(Map.of("error", "Server Error")));
         }
 
@@ -141,14 +151,7 @@ public class UserService {
 
 
     public ResponseEntity<Optional<UserMe>> getMe(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !(authentication.getPrincipal() instanceof UserDetails)) {
-            return ResponseEntity.status(401).body(Optional.empty());
-        }
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String email = userDetails.getUsername();
-
-        Optional<UserDetails> optionalUser = userRepository.findByEmail(email);
+        Optional<UserDetails> optionalUser = securityUtils.getAuthUser();
 
         if (optionalUser.isEmpty()) {
             return ResponseEntity.status(404).body(Optional.empty());

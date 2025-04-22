@@ -17,7 +17,7 @@ public class ProductService {
         return productRepository.findByName(name).orElseThrow(() ->  new RuntimeException("Product not found with id: " + name));
     }
     public List<Product> getAllProducts () {
-//        make limit 8
+
         return productRepository.findAll();
     }
 
