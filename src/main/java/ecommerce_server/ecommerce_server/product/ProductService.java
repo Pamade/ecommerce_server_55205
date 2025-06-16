@@ -16,9 +16,23 @@ public class ProductService {
     public Product getProductByName(String name) {
         return productRepository.findByName(name).orElseThrow(() ->  new RuntimeException("Product not found with id: " + name));
     }
+
     public List<Product> getAllProducts () {
 
         return productRepository.findAll();
+    }
+
+    @Transactional
+    public void removeAsPurchaseProduct(String name, Integer quantity, Size size){
+        Product product = getProductByName(name);
+        Map<Size, Integer> sizeQuantities= product.getSizeQuantities();
+        Integer currentQuantity = sizeQuantities.getOrDefault(size, 0);
+        if (currentQuantity < quantity) {
+            throw new IllegalArgumentException("Not enough quantity for size " + size);
+        }
+        sizeQuantities.put(size, currentQuantity - quantity);
+
+        productRepository.save(product);
     }
 
 //    @Transactional

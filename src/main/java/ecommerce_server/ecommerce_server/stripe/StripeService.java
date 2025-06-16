@@ -38,9 +38,7 @@ public class StripeService {
     }
 
     public ResponseEntity<Map<String, String>> createSession() throws StripeException {
-        System.out.println("Gej");
         System.out.println(stripeSecretKey);
-
 
         final String successUrl = "http://localhost:5173/success";
         final String cancelUrl = "http://localhost:5173/cancel";
@@ -68,7 +66,7 @@ public class StripeService {
                                             .setUnitAmount(unitAmount)
                                             .setProductData(
                                                     SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                                            .setName(product.getName() + " - Size " + item.getSize())
+                                                            .setName(product.getName() + " _ " + item.getSize())
                                                             .setDescription(product.getDescription())
                                                             .addImage(product.getImages().get(0))
                                                             .build()
@@ -78,6 +76,9 @@ public class StripeService {
                             .build()
             );
         }
+        //set item for email
+        sessionBuilder.setCustomerEmail(userDetails.getUsername());
+        //set item for shipping
         sessionBuilder.addLineItem(
                 SessionCreateParams.LineItem.builder()
                         .setQuantity(1L)

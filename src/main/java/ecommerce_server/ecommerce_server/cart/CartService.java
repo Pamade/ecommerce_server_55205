@@ -5,7 +5,6 @@ import ecommerce_server.ecommerce_server.cartItem.CartItemDto;
 import ecommerce_server.ecommerce_server.cartItem.CartItemRepository;
 import ecommerce_server.ecommerce_server.product.Product;
 import ecommerce_server.ecommerce_server.product.ProductRepository;
-import ecommerce_server.ecommerce_server.product.Size;
 import ecommerce_server.ecommerce_server.utils.SecurityUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -93,6 +92,20 @@ public class CartService {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Transactional
+    public void clearCart(String email){
+        try {
+            System.out.println(email + "SERVICE EMAILLLLLL");
+            Cart cart = cartRepository.findByUserEmail(email);
+            cart.getCartItems().clear();
+            cart.setTotalPrice(0);
+            cartRepository.save(cart);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Transactional

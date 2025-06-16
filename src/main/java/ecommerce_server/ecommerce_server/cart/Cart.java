@@ -26,7 +26,7 @@ public class Cart {
     @JsonIgnore
     private User user;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference // Prevents infinite recursion
     private List<CartItem> cartItems;
 

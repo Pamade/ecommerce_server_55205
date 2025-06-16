@@ -20,12 +20,9 @@ public class JwtService {
 
     @Value("${jwt.secret}")
     private String jwtSecret;
-
     public String getJwtSecret() {
         return jwtSecret;
     }
-
-
 
     public String extractUsername(String token){
         return  extractClaim(token, Claims::getSubject);
